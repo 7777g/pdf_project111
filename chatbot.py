@@ -21,8 +21,6 @@ from PyPDF2 import PdfReader
 load_dotenv()
 
 
-st.title("Ask Questions About Your PDF")
-uploaded_file = st.file_uploader("Upload your PDF", type="pdf")
 class chatbot(TypedDict):
     qwery:str
     question:str
@@ -33,49 +31,6 @@ state: chatbot = {
                "context": "",
             
             }
-
-if uploaded_file:
-    # Extract text from PDF
-    pdf = PdfReader(uploaded_file)
-    raw_text = ""
-    for page in pdf.pages:
-        raw_text += page.extract_text() or ""
-
-    state["qwery"]=raw_text
-
-    
-    
-    st.success("PDF loaded and text extracted! Ready for questions.(Please wait for few seconds)")
-
-
-    
-
-    
-    
-
-
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite", temperature=0.2)
-
-
-from langchain.prompts import PromptTemplate
-prompt = PromptTemplate(
-    template="""
-      You are a helpful assistant.
-      Answer  from the provided question pdf_text and message. where message is the chat history.
-      try to understand the question and be collorabative. If question is out of context then check the messages if it can help 
-
-      pdf_text:{pdf_text}
-      Question: {question}
-      message:{message}
-
-
-    """,
-    input_variables = ['pdf_text', 'question','message']
-)
-
-
-
-
 
 def chunk(state:chatbot) ->chatbot:
   splitter = RecursiveCharacterTextSplitter(chunk_size=350, chunk_overlap=30)
@@ -98,14 +53,38 @@ def retrieval(state:chatbot) ->chatbot:
     return state
 
 
+st.title("Ask Questions About Your PDF")
+uploaded_file = st.file_uploader("Upload your PDF", type="pdf")
+if uploaded_file:
+    # Extract text from PDF
+    pdf = PdfReader(uploaded_file)
+    raw_text = ""
+    for page in pdf.pages:
+        raw_text += page.extract_text() or ""
+
+    state["qwery"]=raw_text
+
+    
+    
+    st.success("PDF loaded and text extracted! Ready for questions.(Please wait for few seconds)")
+
+    state=chunk(state)
+    state=indexing(state)
+    state=retrieval(state)
+    
 
 
 
+    
+
+    
+    
 
 
-state=chunk(state)
-state=indexing(state)
-state=retrieval(state)
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite", temperature=0.2)
+
+
+
 
 
 
@@ -124,18 +103,18 @@ state=retrieval(state)
 def main():
     st.title("ask  chatbot")
 
-
+    try:
     
-    if 'messages' not in st.session_state:
+     if 'messages' not in st.session_state:
         st.session_state.messages=[]
 
-    for message in st.session_state.messages:
+     for message in st.session_state.messages:
         st.chat_message(message['role']).markdown(message['content'])
-    prompt=st.chat_input("Pass your prompt here")
+     prompt=st.chat_input("Pass your prompt here")
 
     
 
-    if prompt:
+     if prompt:
         state["question"]=prompt
         st.chat_message('user').markdown(prompt)
         st.session_state.messages.append({"role":"user","content":prompt})
@@ -176,6 +155,14 @@ def main():
              
               st.session_state.messages.append({"role":"assistant","content":response.content})
               
+
+
+
+    except:
+       
+       st.chat_message("assistant").write("Please provide pdf")
+
+        
 
 
 
