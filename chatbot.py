@@ -105,16 +105,16 @@ def main():
 
     try:
     
-      if 'messages' not in st.session_state:
+     if 'messages' not in st.session_state:
         st.session_state.messages=[]
 
-      for message in st.session_state.messages:
+     for message in st.session_state.messages:
         st.chat_message(message['role']).markdown(message['content'])
-      prompt=st.chat_input("Pass your prompt here")
+     prompt=st.chat_input("Pass your prompt here")
 
     
 
-      if prompt:
+     if prompt:
         state["question"]=prompt
         st.chat_message('user').markdown(prompt)
         st.session_state.messages.append({"role":"user","content":prompt})
@@ -127,11 +127,11 @@ def main():
 
         
 
-         if state["question"] in ["exit","end","stop"]:
+        if state["question"] in ["exit","end","stop"]:
            st.chat_message("assistant").markdown("ok nice to talking you")
    
                 
-         else:
+        else:
               final_prompt = PromptTemplate(
     template="""
       You are a helpful assistant.
@@ -176,4 +176,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
