@@ -21,6 +21,7 @@ from PyPDF2 import PdfReader
 load_dotenv()
 
 
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite", temperature=0.2)
 class chatbot(TypedDict):
     qwery:str
     question:str
@@ -81,7 +82,6 @@ if uploaded_file:
     
 
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite", temperature=0.2)
 
 
 
@@ -103,7 +103,7 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite", temperature=0.2)
 def main():
     st.title("ask  chatbot")
 
- 
+    try:
     
      if 'messages' not in st.session_state:
         st.session_state.messages=[]
@@ -158,7 +158,10 @@ def main():
 
 
 
- 
+    except:
+       
+       st.chat_message("assistant").write("Please provide pdf")
+
         
 
 
@@ -173,4 +176,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
