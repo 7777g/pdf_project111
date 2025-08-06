@@ -103,7 +103,7 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite", temperature=0.2)
 def main():
     st.title("ask  chatbot")
 
-    try:
+ 
     
      if 'messages' not in st.session_state:
         st.session_state.messages=[]
@@ -158,10 +158,7 @@ def main():
 
 
 
-    except:
-       
-       st.chat_message("assistant").write("Please provide pdf")
-
+ 
         
 
 
@@ -176,3 +173,4 @@ def main():
 
 if __name__=="__main__":
     main()
+
